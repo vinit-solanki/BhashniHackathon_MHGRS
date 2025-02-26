@@ -1,8 +1,8 @@
-# UP-IGRS: Integrated Grievance Redressal System
+# MH-IGRS: Integrated Grievance Redressal System For Maharashtra State Gov
 
 ## 🎯 Project Overview
 
-UP-IGRS is a comprehensive, AI-powered grievance management system designed for Uttar Pradesh. It combines advanced machine learning capabilities with a user-friendly interface to streamline the process of submitting, tracking, and resolving citizen grievances.
+MH-IGRS is a comprehensive, AI-powered grievance management system designed for Uttar Pradesh. It combines advanced machine learning capabilities with a user-friendly interface to streamline the process of submitting, tracking, and resolving citizen grievances.
 
 ## 🏗️ System Architecture
 ![UP-IGRS System Architecture](./working_2.png)
