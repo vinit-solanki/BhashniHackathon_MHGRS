@@ -1,5 +1,6 @@
 import { useState } from "react"
 import React from "react"
+import Maharashtralogo from "../assets/mahadbtlogo.jpeg";
 
 function Login({ onLogin }) {
   const [username, setUsername] = useState("")
@@ -44,16 +45,13 @@ function Login({ onLogin }) {
         <div className="text-center mb-8">
           <div className="flex justify-center items-center mb-4">
             <img 
-              src="/up.png"
-              alt="UP Government Logo" 
+              src={Maharashtralogo}
+              alt="MH Government Logo" 
               className="h-32 w-auto object-contain"
             />
           </div>
-          <h3 className="text-2xl font-bold text-gray-800 mt-2">
-            उत्तर प्रदेश शासन
-          </h3>
           <h4 className="text-xl text-gray-700 mt-1">
-            IGRS Portal Login
+            JanMitra-AI Portal Login
           </h4>
           <div className="flex justify-center gap-2 mt-4">
             <div className="h-1 w-12 bg-[#FF9933] rounded-full opacity-70"></div>
