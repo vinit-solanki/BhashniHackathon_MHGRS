@@ -130,14 +130,14 @@ function App() {
             element={<Signup onSignupSuccess={handleSignupSuccess} />}
           />
 
-          {isAuthenticated ? (
+          {
             <Route element={<Layout userRole={userRole} onLogout={handleLogout} userAuth={userData} />}>
               <Route index element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard userAuth={userData} />} />
               <Route path="/grievances" element={<GrievanceList grievances={grievances} />} />
               <Route
                 path="/heatmap"
-                element={isHighLevelRole ? <AreaHeatmap /> : <Navigate to="/dashboard" replace />}
+                element={<AreaHeatmap />}
               />
               <Route path="/chat" element={<Chat />} />
               <Route path="/announcements" element={<Announcements userRole={userRole} />} />
@@ -145,9 +145,7 @@ function App() {
               <Route path="/feedback" element={<Feedback />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Route>
-          ) : (
-            <Route path="/*" element={<Navigate to="/" replace />} />
-          )}
+          }
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

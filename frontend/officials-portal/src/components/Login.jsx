@@ -156,6 +156,7 @@ function Login({ onLogin }) {
           <div>
             <button
               type="submit"
+              onClick={()=>handleSubmit()}
               className="w-full py-3 bg-gradient-to-r from-[#FF9933] via-[#000080] to-[#138808] text-white rounded-md hover:opacity-90 transition duration-150 font-medium text-lg shadow-md"
             >
               प्रवेश करें (Login)
