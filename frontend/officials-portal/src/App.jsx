@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login';
+import Signup from './components/SignUp';
 import Dashboard from './pages/Dashboard';
 import Layout from './Layout';
 import GrievanceList from './components/GrievanceList';
@@ -12,16 +13,12 @@ import TaskManagement from './pages/TaskManagement';
 import Feedback from './pages/Feedback';
 import { supabase } from './utils/supabase';
 
-console.log('App - VITE_SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL);
-console.log('App - VITE_SUPABASE_ANON_KEY:', import.meta.env.VITE_SUPABASE_ANON_KEY);
-
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState('');
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    // Check auth state on mount
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
         setIsAuthenticated(true);
@@ -33,7 +30,6 @@ function App() {
       }
     });
 
-    // Initial check
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
@@ -116,6 +112,11 @@ function App() {
 
   const isHighLevelRole = ['district_magistrate', 'department_head', 'admin'].includes(userRole);
 
+  const handleSignupSuccess = () => {
+    // Optionally redirect to login after signup
+    // navigate('/'); // Uncomment if using useNavigate
+  };
+
   return (
     <ThemeProvider defaultTheme="light">
       <BrowserRouter>
@@ -123,6 +124,10 @@ function App() {
           <Route
             path="/"
             element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login onLogin={handleLogin} />}
+          />
+          <Route
+            path="/signup"
+            element={<Signup onSignupSuccess={handleSignupSuccess} />}
           />
 
           {isAuthenticated ? (
