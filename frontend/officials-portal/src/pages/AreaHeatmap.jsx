@@ -1,10 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  MapContainer,
-  TileLayer,
-  GeoJSON,
-  useMap,
-} from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet.heat";
 import "leaflet/dist/leaflet.css";
@@ -16,24 +11,7 @@ L.Icon.Default.mergeOptions({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
-heatLayerRef.current = L.heatLayer(points, {
-  radius: 25,
-  blur: 15,
-  maxZoom: 18,
-  gradient: {
-    0.0: "#1a9850", // Green for very low density
-    0.2: "#91cf60", // Light green
-    0.4: "#d9ef8b", // Yellow-green
-    0.6: "#fee08b", // Yellow
-    0.8: "#fc8d59", // Orange
-    1.0: "#d73027", // Red for high density
-  },
-}).addTo(map);
-const statusColors = {
-  Pending: { 0.4: "#d73027", 0.6: "#f46d43", 1.0: "#fdae61" }, // Reds
-  "In Progress": { 0.4: "#fee08b", 0.6: "#d9ef8b", 1.0: "#a6d96a" }, // Yellows
-  Completed: { 0.4: "#1a9850", 0.6: "#66bd63", 1.0: "#d9f7be" }, // Greens
-};
+
 // Generate mock data (unchanged)
 const generateMockData = () => {
   const departments = ["Water Department", "Electricity", "Roads", "Sanitation"];
@@ -70,7 +48,10 @@ const generateMockData = () => {
   });
 
   for (let i = 0; i < 100; i++) {
-    const latMin = 15.6, latMax = 22.0, lngMin = 72.6, lngMax = 80.9;
+    const latMin = 15.6,
+      latMax = 22.0,
+      lngMin = 72.6,
+      lngMax = 80.9;
     points.push({
       lat: latMin + Math.random() * (latMax - latMin),
       lng: lngMin + Math.random() * (lngMax - lngMin),
@@ -119,7 +100,7 @@ const maharashtraGeoJSON = {
   },
 };
 
-// Major cities
+// Major cities (unchanged)
 const majorCities = [
   { name: "Mumbai", lat: 19.076, lng: 72.877 },
   { name: "Pune", lat: 18.52, lng: 73.856 },
@@ -128,28 +109,72 @@ const majorCities = [
   { name: "Aurangabad", lat: 19.877, lng: 75.343 },
 ];
 
+// Region GeoJSONs (completed)
+const regionGeoJSONs = {
+  "North West": {
+    type: "Feature",
+    geometry: { type: "Polygon", coordinates: [[[72.6, 18.5], [74, 18.5], [74, 22], [72.6, 22], [72.6, 18.5]]] },
+  },
+  "North Central": {
+    type: "Feature",
+    geometry: { type: "Polygon", coordinates: [[[74, 18.5], [77, 18.5], [77, 22], [74, 22], [74, 18.5]]] },
+  },
+  "North East": {
+    type: "Feature",
+    geometry: { type: "Polygon", coordinates: [[[77, 18.5], [80.9, 18.5], [80.9, 22], [77, 22], [77, 18.5]]] },
+  },
+  "South West": {
+    type: "Feature",
+    geometry: { type: "Polygon", coordinates: [[[72.6, 15.6], [74, 15.6], [74, 18.5], [72.6, 18.5], [72.6, 15.6]]] },
+  },
+  "South Central": {
+    type: "Feature",
+    geometry: { type: "Polygon", coordinates: [[[74, 15.6], [77, 15.6], [77, 18.5], [74, 18.5], [74, 15.6]]] },
+  },
+  "South East": {
+    type: "Feature",
+    geometry: { type: "Polygon", coordinates: [[[77, 15.6], [80.9, 15.6], [80.9, 18.5], [77, 18.5], [77, 15.6]]] },
+  },
+  Other: {
+    type: "Feature",
+    geometry: { type: "Polygon", coordinates: [[[72.6, 15.6], [80.9, 15.6], [80.9, 22], [72.6, 22], [72.6, 15.6]]] },
+  },
+};
+
 // Heatmap component
 function HeatmapLayer({ data, setSelectedRegion, selectedDepartment }) {
   const map = useMap();
   const heatLayersRef = useRef([]);
 
   useEffect(() => {
-    // Clear existing layers
     heatLayersRef.current.forEach((layer) => map.removeLayer(layer));
     heatLayersRef.current = [];
 
     const departmentColors = {
-      "Water Department": { 0.4: "#1f77b4", 0.6: "#7bc8f6", 1.0: "#d1e5f0" }, // Blues
-      Electricity: { 0.4: "#ff7f0e", 0.6: "#ffbb78", 1.0: "#ffecd9" }, // Oranges
-      Roads: { 0.4: "#2ca02c", 0.6: "#98df8a", 1.0: "#d4f0d4" }, // Greens
-      Sanitation: { 0.4: "#9467bd", 0.6: "#c5b0d5", 1.0: "#e8d8f0" }, // Purples
+      "Water Department": { 0.4: "#1f77b4", 0.6: "#7bc8f6", 1.0: "#d1e5f0" },
+      Electricity: { 0.4: "#ff7f0e", 0.6: "#ffbb78", 1.0: "#ffecd9" },
+      Roads: { 0.4: "#2ca02c", 0.6: "#98df8a", 1.0: "#d4f0d4" },
+      Sanitation: { 0.4: "#9467bd", 0.6: "#c5b0d5", 1.0: "#e8d8f0" },
     };
 
+    const defaultGradient = {
+      0.0: "#1a9850",
+      0.2: "#91cf60",
+      0.4: "#d9ef8b",
+      0.6: "#fee08b",
+      0.8: "#fc8d59",
+      1.0: "#d73027",
+    };
+
+    const maxIntensity = Math.max(...data.map((d) => d.intensity), 1);
+
     if (selectedDepartment === "All") {
-      // Create a heatmap for each department
       Object.keys(departmentColors).forEach((dept) => {
         const deptData = data.filter((d) => d.department === dept);
-        const points = deptData.map((d) => [d.lat, d.lng, d.intensity / 10]);
+        const points = deptData.map((d) => {
+          const multiplier = { High: 1.5, Medium: 1.0, Low: 0.5 }[d.priority] || 1.0;
+          return [d.lat, d.lng, (d.intensity / maxIntensity) * multiplier];
+        });
         if (points.length > 0) {
           const layer = L.heatLayer(points, {
             radius: 25,
@@ -161,25 +186,19 @@ function HeatmapLayer({ data, setSelectedRegion, selectedDepartment }) {
         }
       });
     } else {
-      // Single heatmap for selected department
-      const points = data.map((d) => [d.lat, d.lng, d.intensity / 10]);
-      const gradient = selectedDepartment
-        ? departmentColors[selectedDepartment] || {
-            0.0: "#1a9850",
-            0.5: "#fee08b",
-            1.0: "#d73027",
-          }
-        : { 0.0: "#1a9850", 0.5: "#fee08b", 1.0: "#d73027" };
+      const points = data.map((d) => {
+        const multiplier = { High: 1.5, Medium: 1.0, Low: 0.5 }[d.priority] || 1.0;
+        return [d.lat, d.lng, (d.intensity / maxIntensity) * multiplier];
+      });
       const layer = L.heatLayer(points, {
         radius: 25,
         blur: 15,
         maxZoom: 18,
-        gradient,
+        gradient: departmentColors[selectedDepartment] || defaultGradient,
       }).addTo(map);
       heatLayersRef.current.push(layer);
     }
 
-    // Click handler for drill-down (unchanged)
     const onMapClick = (e) => {
       const { lat, lng } = e.latlng;
       let region = "Other";
@@ -202,6 +221,73 @@ function HeatmapLayer({ data, setSelectedRegion, selectedDepartment }) {
   }, [data, map, setSelectedRegion, selectedDepartment]);
 
   return null;
+}
+
+// Region Layer
+function RegionLayer({ hoveredRegion }) {
+  const map = useMap();
+
+  useEffect(() => {
+    const layers = Object.entries(regionGeoJSONs).map(([region, geojson]) => {
+      const layer = L.geoJSON(geojson, {
+        style: {
+          fillColor: region === hoveredRegion ? "#ffeda0" : "transparent",
+          weight: 1,
+          color: "#333",
+          fillOpacity: region === hoveredRegion ? 0.5 : 0,
+        },
+      }).addTo(map);
+      return layer;
+    });
+
+    return () => {
+      layers.forEach((layer) => map.removeLayer(layer));
+    };
+  }, [hoveredRegion, map]);
+
+  return null;
+}
+
+// Heatmap Legend
+function HeatmapLegend({ selectedDepartment }) {
+  const departmentColors = {
+    "Water Department": { name: "Water", color: "#1f77b4" },
+    Electricity: { name: "Electricity", color: "#ff7f0e" },
+    Roads: { name: "Roads", color: "#2ca02c" },
+    Sanitation: { name: "Sanitation", color: "#9467bd" },
+  };
+
+  if (selectedDepartment !== "All") {
+    return (
+      <div className="absolute bottom-10 left-10 bg-white p-2 rounded shadow z-[1000]">
+        <h3 className="text-sm font-medium">Issue Density</h3>
+        <div
+          className="w-40 h-4 mt-1"
+          style={{
+            background: `linear-gradient(to right, #1a9850, #91cf60, #d9ef8b, #fee08b, #fc8d59, #d73027)`,
+          }}
+        ></div>
+        <div className="flex justify-between text-xs mt-1">
+          <span>Low</span>
+          <span>High</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="absolute bottom-10 left-10 bg-white p-2 rounded shadow z-[1000]">
+      <h3 className="text-sm font-medium">Departments</h3>
+      <div className="mt-1">
+        {Object.entries(departmentColors).map(([dept, { name, color }]) => (
+          <div key={dept} className="flex items-center mt-1">
+            <div className="w-4 h-4 mr-2" style={{ backgroundColor: color }}></div>
+            <span className="text-xs">{name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 function AreaHeatmap() {
@@ -239,12 +325,10 @@ function AreaHeatmap() {
       filtered = filtered.filter((issue) => {
         let region = "Other";
         if (issue.lng < 74 && issue.lat > 18.5) region = "North West";
-        else if (issue.lng >= 74 && issue.lng < 77 && issue.lat > 18.5)
-          region = "North Central";
+        else if (issue.lng >= 74 && issue.lng < 77 && issue.lat > 18.5) region = "North Central";
         else if (issue.lng >= 77 && issue.lat > 18.5) region = "North East";
         else if (issue.lng < 74 && issue.lat <= 18.5) region = "South West";
-        else if (issue.lng >= 74 && issue.lng < 77 && issue.lat <= 18.5)
-          region = "South Central";
+        else if (issue.lng >= 74 && issue.lng < 77 && issue.lat <= 18.5) region = "South Central";
         else if (issue.lng >= 77 && issue.lat <= 18.5) region = "South East";
         return region === selectedRegion;
       });
@@ -271,12 +355,10 @@ function AreaHeatmap() {
   filteredData.forEach((issue) => {
     let region = "Other";
     if (issue.lng < 74 && issue.lat > 18.5) region = "North West";
-    else if (issue.lng >= 74 && issue.lng < 77 && issue.lat > 18.5)
-      region = "North Central";
+    else if (issue.lng >= 74 && issue.lng < 77 && issue.lat > 18.5) region = "North Central";
     else if (issue.lng >= 77 && issue.lat > 18.5) region = "North East";
     else if (issue.lng < 74 && issue.lat <= 18.5) region = "South West";
-    else if (issue.lng >= 74 && issue.lng < 77 && issue.lat <= 18.5)
-      region = "South Central";
+    else if (issue.lng >= 74 && issue.lng < 77 && issue.lat <= 18.5) region = "South Central";
     else if (issue.lng >= 77 && issue.lat <= 18.5) region = "South East";
     regionData[region] = (regionData[region] || 0) + 1;
   });
@@ -286,14 +368,10 @@ function AreaHeatmap() {
       <h2 className="text-2xl font-semibold mb-4">Grievance Heatmap</h2>
       <div className="flex flex-col h-screen bg-gray-50">
         <div className="bg-white p-4 border-b border-gray-300 shadow-sm">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">
-            Maharashtra Issues Heatmap
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">Maharashtra Issues Heatmap</h1>
           <div className="flex flex-wrap gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Department
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
               <select
                 className="border border-gray-300 rounded-md p-2"
                 value={selectedDepartment}
@@ -307,9 +385,7 @@ function AreaHeatmap() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Status
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
               <select
                 className="border border-gray-300 rounded-md p-2"
                 value={selectedStatus}
@@ -323,9 +399,7 @@ function AreaHeatmap() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Priority
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
               <select
                 className="border border-gray-300 rounded-md p-2"
                 value={selectedPriority}
@@ -340,9 +414,7 @@ function AreaHeatmap() {
             </div>
             {selectedRegion && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Region
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Region</label>
                 <button
                   className="border border-gray-300 rounded-md p-2 bg-red-500 text-white"
                   onClick={() => setSelectedRegion(null)}
@@ -357,45 +429,42 @@ function AreaHeatmap() {
         <div className="flex flex-1 overflow-hidden">
           <div className="w-3/5 p-4">
             <div className="bg-white p-4 rounded-lg shadow h-full flex flex-col">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">
-                Issue Distribution Heatmap
-              </h2>
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">Issue Distribution Heatmap</h2>
               <div className="flex-1 relative">
-  <MapContainer
-    center={[19, 76.5]}
-    zoom={7}
-    style={{ height: "100%", width: "100%" }}
-    scrollWheelZoom={true}
-  >
-    <TileLayer
-      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    />
-    <GeoJSON
-      data={maharashtraGeoJSON}
-      style={{
-        fillColor: "#f0f0f0",
-        weight: 1.5,
-        color: "#333",
-        fillOpacity: 0.5,
-      }}
-    />
-    <HeatmapLayer
-      data={filteredData}
-      setSelectedRegion={setSelectedRegion}
-      selectedDepartment={selectedDepartment}
-    />
-  </MapContainer>
-  <HeatmapLegend selectedDepartment={selectedDepartment} />
+                <MapContainer
+                  center={[19, 76.5]}
+                  zoom={7}
+                  style={{ height: "100%", width: "100%" }}
+                  scrollWheelZoom={true}
+                >
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  />
+                  <GeoJSON
+                    data={maharashtraGeoJSON}
+                    style={{
+                      fillColor: "#f0f0f0",
+                      weight: 1.5,
+                      color: "#333",
+                      fillOpacity: 0.5,
+                    }}
+                  />
+                  <RegionLayer hoveredRegion={hoveredRegion} />
+                  <HeatmapLayer
+                    data={filteredData}
+                    setSelectedRegion={setSelectedRegion}
+                    selectedDepartment={selectedDepartment}
+                  />
+                </MapContainer>
+                <HeatmapLegend selectedDepartment={selectedDepartment} />
               </div>
             </div>
           </div>
 
           <div className="w-2/5 p-4 overflow-y-auto">
             <div className="bg-white p-4 rounded-lg shadow mb-4">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">
-                Issue Analysis
-              </h2>
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">Issue Analysis</h2>
               <div className="mb-6">
                 <h3 className="text-md font-medium mb-2 text-gray-700">Summary</h3>
                 <p className="text-2xl font-bold text-gray-900">{filteredData.length} Issues</p>
@@ -478,9 +547,7 @@ function AreaHeatmap() {
                       <p className="font-medium text-gray-800">{region}</p>
                       <p className="text-sm text-gray-600">
                         {count} issues (
-                        {filteredData.length
-                          ? Math.round((count / filteredData.length) * 100)
-                          : 0}
+                        {filteredData.length ? Math.round((count / filteredData.length) * 100) : 0}
                         %)
                       </p>
                     </div>
@@ -492,7 +559,7 @@ function AreaHeatmap() {
               <h2 className="text-lg font-semibold text-gray-800 mb-4">Using This Heatmap</h2>
               <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
                 <li>The heatmap shows issue concentration across Maharashtra</li>
-                <li>Red areas indicate high issue density, blue indicates fewer issues</li>
+                <li>Red areas indicate high issue density, green indicates fewer issues</li>
                 <li>Use filters to analyze by department, status, or priority</li>
                 <li>Click on the map to drill down by region</li>
                 <li>Zoom and scroll to explore the map interactively</li>
@@ -501,43 +568,6 @@ function AreaHeatmap() {
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  );
-}
-function HeatmapLegend({ selectedDepartment }) {
-  const departmentColors = {
-    "Water Department": { name: "Water", color: "#1f77b4" },
-    Electricity: { name: "Electricity", color: "#ff7f0e" },
-    Roads: { name: "Roads", color: "#2ca02c" },
-    Sanitation: { name: "Sanitation", color: "#9467bd" },
-  };
-
-  if (selectedDepartment !== "All") {
-    return (
-      <div className="absolute bottom-10 left-10 bg-white p-2 rounded shadow z-[1000]">
-        <h3 className="text-sm font-medium">Issue Density</h3>
-        <div className="w-40 h-4 mt-1" style={{
-          background: `linear-gradient(to right, #1a9850, #fee08b, #d73027)`,
-        }}></div>
-        <div className="flex justify-between text-xs mt-1">
-          <span>Low</span>
-          <span>High</span>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="absolute bottom-10 left-10 bg-white p-2 rounded shadow z-[1000]">
-      <h3 className="text-sm font-medium">Departments</h3>
-      <div className="mt-1">
-        {Object.entries(departmentColors).map(([dept, { name, color }]) => (
-          <div key={dept} className="flex items-center mt-1">
-            <div className="w-4 h-4 mr-2" style={{ backgroundColor: color }}></div>
-            <span className="text-xs">{name}</span>
-          </div>
-        ))}
       </div>
     </div>
   );
